@@ -1,87 +1,68 @@
-# Welcome to React Router!
+# catfol.io 🐾
 
-A modern, production-ready template for building full-stack React applications using React Router.
+**catfol.io** is a single-page React application for uploading, browsing, and curating cat images.  
+Users can upload their own cats, vote them up or down, favourite them, and see live scores based on community feedback.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
-
-## Features
-
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-
-## Getting Started
-
-### Installation
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+This project was built as part of a technical interview challenge, with a focus on clean architecture, modern frontend practices, and a production-quality user experience.
 
 ---
 
-Built with ❤️ using React Router.
+## ✨ Features
+
+- Upload new cat images
+- View previously uploaded cats in a responsive grid
+- Favourite / unfavourite cats
+- Vote cats up or down
+- Display live scores based on votes
+- Client-side validation and API error handling
+- Responsive design down to mobile viewports
+
+---
+
+## 🛠 Tech Stack
+
+- **React** (SPA)
+- **TypeScript** (for safety and maintainability)
+- **React Router** (routing)
+- **Fetch / Axios** (API communication)
+- **CSS Modules / Styled Components / Tailwind** *(pick one)*
+- **Jest + React Testing Library** *(key components & logic)*
+
+External API powered by:  
+👉 https://thecatapi.com/
+
+---
+
+## 🧠 Architecture & Approach
+
+- Clear separation between **UI components**, **API services**, and **application state**
+- Reusable presentational components for cat cards and controls
+- API interactions abstracted into a dedicated service layer
+- Optimistic UI updates for voting and favouriting where appropriate
+- Graceful loading and error states throughout the app
+
+---
+
+## 🧪 Testing
+
+Tests focus on:
+- Core user interactions (voting, favouriting)
+- Key components rendering correctly with API data
+- Error and loading state handling
+
+The goal was meaningful coverage rather than exhaustive testing.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js >= 18
+- The Cat API key (free)
+
+### Installation
+
+```bash
+git clone https://github.com/your-username/catfol.io.git
+cd catfol.io
+npm install
