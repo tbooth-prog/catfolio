@@ -8,7 +8,15 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import "@fontsource/source-code-pro/600.css";
 import "./app.css";
+import { useDogMode } from "./utils/hooks";
+import { Provider } from "react-redux";
+import store from "./store";
+import { getInitialTheme, getOrCreateUserId } from "./utils";
+import { initAuth } from "./store/authSlice";
+import { ApiClient } from "./service/apiClient";
+import { DogModeProvider } from "./context/dogModeContext";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -22,6 +30,18 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+export function clientLoader(): boolean {
+  const theme = getInitialTheme();
+
+  ApiClient.initClient(theme);
+  document.documentElement.dataset.theme = theme;
+  store.dispatch(initAuth());
+
+  return theme === "dog";
+}
+
+clientLoader.hydrate = true as const;
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -41,8 +61,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  return <Outlet />;
+export default function App({ loaderData }: { loaderData: boolean }) {
+  return (
+    <DogModeProvider initialValue={loaderData}>
+      <Provider store={store}>
+        <Outlet />
+      </Provider>
+    </DogModeProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
