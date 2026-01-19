@@ -5,6 +5,8 @@ export const THEME_KEY = "catfolio:theme";
 // Load more height, takes any valid bottom value string
 // used to trigger infinte scroll loader before reaching the bottom
 export const INFINITE_SCROLL_TOLERANCE = "75vh";
+// Pixels within which the scroll hint isn't shown
+export const SCROLL_HINT_BUFFER = 75;
 
 export function getOrCreateUserId(): string {
   let userId = localStorage.getItem(USER_ID_KEY);
