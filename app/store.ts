@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./store/authSlice";
 import galleryReducer from "./store/gallerySlice";
+import type { TaskStatus } from "./utils/enums";
 
 const store = configureStore({
   reducer: {

@@ -2,6 +2,9 @@ import { ImageOrientation } from "./enums";
 
 export const USER_ID_KEY = "catfolio:userId";
 export const THEME_KEY = "catfolio:theme";
+// Load more height, takes any valid bottom value string
+// used to trigger infinte scroll loader before reaching the bottom
+export const INFINITE_SCROLL_TOLERANCE = "75vh";
 
 export function getOrCreateUserId(): string {
   let userId = localStorage.getItem(USER_ID_KEY);
@@ -34,3 +37,9 @@ export const getImageOrientation = (
     return ImageOrientation.Landscape;
   }
 };
+
+export function dedupeById<T extends { id: string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+
+  return items.filter((item) => !seen.has(item.id) && seen.add(item.id));
+}
