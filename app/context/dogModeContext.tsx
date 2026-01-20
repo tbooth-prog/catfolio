@@ -2,10 +2,10 @@ import {
   createContext,
   useCallback,
   useState,
-  type FC,
   type PropsWithChildren,
 } from "react";
 import { ApiClient } from "~/service/apiClient";
+import { resetApp } from "~/store";
 import { THEME_KEY } from "~/utils";
 
 interface DogModeContextType {
@@ -40,6 +40,7 @@ export const DogModeProvider = (
         localStorage.setItem(THEME_KEY, theme);
 
         ApiClient.switchInstance(theme);
+        resetApp();
         return newMode;
       }),
     [],

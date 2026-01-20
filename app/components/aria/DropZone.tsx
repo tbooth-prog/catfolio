@@ -7,7 +7,7 @@ import {
 import { tv } from "tailwind-variants";
 
 const dropZone = tv({
-  base: "flex items-center justify-center p-8 min-h-90 md:min-h-128 w-full md:w-3/4 font-sans text-base text-balance text-center rounded-lg border border-1 border-subtle dog:border-subtle-dark bg-surface dog:bg-surface-dark",
+  base: "flex items-center justify-center p-8 w-full font-sans text-base text-balance text-center rounded-lg border border-1 border-subtle dog:border-subtle-dark bg-surface dog:bg-surface-dark cursor-pointer",
   variants: {
     isFocusVisible: {
       true: "outline-2 -outline-offset-1 outline-primary dog:outline-primary-dark forced-colors:outline-[Highlight]",

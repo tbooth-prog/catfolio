@@ -7,18 +7,17 @@ export const TaskStatus = {
 export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
 
 export const GalleryFilter = {
-  None: "none",
+  All: "all",
   MyImages: "my-images",
-  Favourites: "favorites",
-  Voted: "voted",
+  Favourites: "favourites",
+  TopRated: "top-rated",
 } as const;
 export type GalleryFilter = (typeof GalleryFilter)[keyof typeof GalleryFilter];
 
 export const GallerySortOption = {
-  None: "none",
-  DateAsc: "date-asc",
-  DateDesc: "date-desc",
-  TopRated: "top-rated",
+  None: "RAND",
+  DateAsc: "ASC",
+  DateDesc: "DESC",
 } as const;
 export type GallerySortOption =
   (typeof GallerySortOption)[keyof typeof GallerySortOption];

@@ -1,4 +1,4 @@
-import { TheCatAPI, type ApiResponseError } from "@thatapicompany/thecatapi";
+import { TheCatAPI } from "@thatapicompany/thecatapi";
 
 type ApiType = "cat" | "dog";
 

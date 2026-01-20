@@ -1,5 +1,4 @@
 import { motion } from "motion/react";
-import type { PropsWithChildren } from "react";
 import { clsx } from "clsx";
 import { ImageOrientation } from "~/utils/enums";
 import type { Image } from "~/api/types";
@@ -9,13 +8,13 @@ interface Props {
   image: Image;
 }
 
-export function ImageCard(props: Props) {
+export function GalleryImage(props: Props) {
   const { image } = props;
 
   const orientation = getImageOrientation(image.width, image.height);
 
   const className = clsx(
-    "w-full bg-surface break-inside-avoid rounded-xl hover:shadow-lg overflow-hidden contain-content",
+    "w-full bg-surface dog:bg-surface-dark break-inside-avoid rounded-xl overflow-hidden contain-content",
     {
       "aspect-3/4": orientation === ImageOrientation.Portrait,
       "aspect-4/3": orientation === ImageOrientation.Landscape,

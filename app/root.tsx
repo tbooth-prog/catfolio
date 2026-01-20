@@ -10,11 +10,9 @@ import {
 import type { Route } from "./+types/root";
 import "@fontsource/source-code-pro/600.css";
 import "./app.css";
-import { useDogMode } from "./utils/hooks";
 import { Provider } from "react-redux";
 import store from "./store";
 import { getInitialTheme, getOrCreateUserId } from "./utils";
-import { initAuth } from "./store/authSlice";
 import { ApiClient } from "./service/apiClient";
 import { DogModeProvider } from "./context/dogModeContext";
 
@@ -36,7 +34,7 @@ export function clientLoader(): boolean {
 
   ApiClient.initClient(theme);
   document.documentElement.dataset.theme = theme;
-  store.dispatch(initAuth());
+  getOrCreateUserId();
 
   return theme === "dog";
 }
