@@ -71,7 +71,7 @@ External API powered by:
 ```bash
 git clone https://github.com/your-username/catfol.io.git
 cd catfol.io
-pnpm add
+pnpm install
 ```
 
 ### Running the App
@@ -98,7 +98,7 @@ VITE_DOG_API_KEY=your-dog-api-key-here
 
 ## 📦 Deployment
 
-
+The app is deployed on Vercel. Visit [catfol.io](https://catfolio-three.vercel.app/) to see it in action.
 
 ---
 
