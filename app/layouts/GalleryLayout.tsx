@@ -22,10 +22,12 @@ export default function GalleryLayout() {
 					<Heart strokeWidth={1} className="size-5" />
 					<span className="hidden sm:block">Favourites</span>
 				</LinkButton>
-				<LinkButton to={`/?filter=${GalleryFilter.TopRated}`} variant="secondary" className="flex-1 sm:flex-initial">
-					<Star strokeWidth={1} className="size-5" />
-					<span className="hidden sm:block">Top Rated</span>
-				</LinkButton>
+				{!isDogModeEnabled && (
+					<LinkButton to={`/?filter=${GalleryFilter.TopRated}`} variant="secondary" className="flex-1 sm:flex-initial">
+						<Star strokeWidth={1} className="size-5" />
+						<span className="hidden sm:block">Top Rated</span>
+					</LinkButton>
+				)}
 			</div>
 			<Outlet />
 		</div>
