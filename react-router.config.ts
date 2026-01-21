@@ -7,5 +7,5 @@ export default {
 	prerender: ({ getStaticPaths }) => {
 		const paths = getStaticPaths();
 		return [...paths];
-	},
+	}, // Prerender static paths
 } satisfies Config;
