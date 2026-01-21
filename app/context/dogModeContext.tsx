@@ -1,54 +1,37 @@
-import {
-  createContext,
-  useCallback,
-  useState,
-  type PropsWithChildren,
-} from "react";
-import { ApiClient } from "~/service/apiClient";
-import { resetApp } from "~/store";
-import { THEME_KEY } from "~/utils";
+import { createContext, useCallback, useEffect, useState, type PropsWithChildren } from 'react';
+import { ApiClient } from '~/service/apiClient';
+import { resetApp } from '~/store';
+import { THEME_KEY } from '~/utils';
 
 interface DogModeContextType {
-  isDogModeEnabled: boolean;
-  toggleDogMode: () => void;
+	isDogModeEnabled: boolean;
+	toggleDogMode: () => void;
 }
 
-export const DogModeContext = createContext<DogModeContextType | undefined>(
-  undefined,
-);
+export const DogModeContext = createContext<DogModeContextType | undefined>(undefined);
 
 interface DogModeProviderProps {
-  initialValue?: boolean;
+	initialValue?: boolean;
 }
 
-export const DogModeProvider = (
-  props: PropsWithChildren<DogModeProviderProps>,
-) => {
-  const { initialValue } = props;
+export const DogModeProvider = (props: PropsWithChildren<DogModeProviderProps>) => {
+	const { initialValue } = props;
 
-  const [isDogModeEnabled, setIsDogModeEnabled] = useState<boolean>(
-    initialValue ?? false,
-  );
+	const [isDogModeEnabled, setIsDogModeEnabled] = useState<boolean>(initialValue ?? false);
 
-  const toggleDogMode = useCallback(
-    () =>
-      setIsDogModeEnabled((prevMode) => {
-        const newMode = !prevMode;
-        const theme = newMode ? "dog" : "cat";
+	const toggleDogMode = useCallback(() => {
+		resetApp();
+		setIsDogModeEnabled((prevMode) => {
+			const newMode = !prevMode;
+			const theme = newMode ? 'dog' : 'cat';
 
-        document.documentElement.dataset.theme = theme;
-        localStorage.setItem(THEME_KEY, theme);
+			document.documentElement.dataset.theme = theme;
+			localStorage.setItem(THEME_KEY, theme);
 
-        ApiClient.switchInstance(theme);
-        resetApp();
-        return newMode;
-      }),
-    [],
-  );
+			ApiClient.switchInstance(theme);
+			return newMode;
+		});
+	}, []);
 
-  return (
-    <DogModeContext.Provider value={{ isDogModeEnabled, toggleDogMode }}>
-      {props.children}
-    </DogModeContext.Provider>
-  );
+	return <DogModeContext.Provider value={{ isDogModeEnabled, toggleDogMode }}>{props.children}</DogModeContext.Provider>;
 };

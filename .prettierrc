@@ -4,5 +4,5 @@
 	"useTabs": true,
 	"printWidth": 200,
 	"plugins": ["prettier-plugin-tailwindcss"],
-	"tailwindStylesheet": "./app/index.css",
+	"tailwindStylesheet": "./app/app.css",
 }
