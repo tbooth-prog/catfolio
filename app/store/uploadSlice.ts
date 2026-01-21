@@ -5,6 +5,7 @@ import { delay, getImageOrientation, getOrCreateUserId } from '~/utils';
 import { TaskStatus } from '~/utils/enums';
 import { ApiResponseError } from '@thatapicompany/thecatapi';
 import { removeImageById } from './gallerySlice';
+import { addError } from './errorSlice';
 
 type UploadState = {
 	totalUploads: number;
@@ -114,9 +115,23 @@ export const uploadImage = createAsyncThunk<FileUploadSuccess, FileUploadRequest
 	}
 });
 
-export const deleteImage = createAsyncThunk('upload/deleteImage', async (imageId: string, { dispatch }) => {
+export const deleteImage = createAsyncThunk<void, string, { rejectValue: string }>('upload/deleteImage', async (imageId: string, { dispatch, rejectWithValue }) => {
 	dispatch(removeImageById(imageId));
-	await ApiClient.getClient().images.deleteImage(imageId);
+
+	try {
+		return await ApiClient.getClient().images.deleteImage(imageId);
+	} catch (error) {
+		const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+
+		dispatch(
+			addError({
+				id: crypto.randomUUID(),
+				error: { title: 'Error deleting image', message: errorMessage },
+			}),
+		);
+
+		return rejectWithValue(errorMessage);
+	}
 });
 
 // Actions =================================================================

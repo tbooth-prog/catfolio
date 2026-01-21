@@ -2,10 +2,12 @@ import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/tool
 import { ApiClient } from '~/service/apiClient';
 import { getOrCreateUserId } from '~/utils';
 import type { FavouriteImageRequest } from './types';
-import type { DeleteFavourite } from '~/api/types';
+import type { AddFavourite, DeleteFavourite } from '~/api/types';
 import type { RootState } from '~/store';
 import { GalleryFilter } from '~/utils/enums';
 import { removeImageById } from './gallerySlice';
+import { addError } from './errorSlice';
+import { ApiResponseError } from '@thatapicompany/thecatapi';
 
 type FavouriteState = {
 	favouriteImages: Record<string, number>;
@@ -51,24 +53,53 @@ const favouriteSlice = createSlice({
 
 // Thunks ==================================================================
 // Favourite image
-export const favouriteImage = createAsyncThunk('favourite/favouriteImage', async (imageId: string, { dispatch }) => {
+export const favouriteImage = createAsyncThunk<AddFavourite, string, { rejectValue: string }>('favourite/favouriteImage', async (imageId: string, { dispatch, rejectWithValue }) => {
 	dispatch(addFavouriteImage(imageId));
 
-	return ApiClient.getClient().favourites.addFavourite(imageId, getOrCreateUserId());
+	try {
+		return await ApiClient.getClient().favourites.addFavourite(imageId, getOrCreateUserId());
+	} catch (error) {
+		const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+
+		dispatch(
+			addError({
+				id: crypto.randomUUID(),
+				error: { title: 'Error favouriting image', message: errorMessage },
+			}),
+		);
+
+		return rejectWithValue(errorMessage);
+	}
 });
 
 // Unfavourite image
-export const unfavouriteImage = createAsyncThunk<DeleteFavourite, FavouriteImageRequest>('favourite/unfavouriteImage', async ({ imageId, favouriteId }, { dispatch, getState }) => {
-	const state = getState() as RootState;
+export const unfavouriteImage = createAsyncThunk<DeleteFavourite, FavouriteImageRequest, { rejectValue: string }>(
+	'favourite/unfavouriteImage',
+	async ({ imageId, favouriteId }, { dispatch, getState, rejectWithValue }) => {
+		const state = getState() as RootState;
 
-	dispatch(removeFavouriteImage(imageId));
+		dispatch(removeFavouriteImage(imageId));
 
-	if (state.gallery.filter === GalleryFilter.Favourites) {
-		dispatch(removeImageById(imageId));
-	}
+		if (state.gallery.filter === GalleryFilter.Favourites) {
+			dispatch(removeImageById(imageId));
+		}
 
-	return ApiClient.getClient().favourites.deleteFavourite(favouriteId);
-});
+		try {
+			return await ApiClient.getClient().favourites.deleteFavourite(favouriteId);
+		} catch (error) {
+			const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+
+			dispatch(
+				addError({
+					id: crypto.randomUUID(),
+					error: { title: 'Error unfavouriting image', message: errorMessage },
+				}),
+			);
+
+			return rejectWithValue(errorMessage);
+		}
+	},
+);
 
 // Actions =================================================================
 export const { addFavouriteImage, bulkAddFavouriteImages, removeFavouriteImage } = favouriteSlice.actions;

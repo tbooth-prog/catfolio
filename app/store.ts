@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import errorReducer from './store/errorSlice';
 import favouriteReducer from './store/favouriteSlice';
 import galleryReducer, {
 	getAllImages,
@@ -17,6 +18,7 @@ import { GalleryFilter } from './utils/enums';
 
 const store = configureStore({
 	reducer: {
+		error: errorReducer,
 		favourite: favouriteReducer,
 		gallery: galleryReducer,
 		upload: uploadReducer,

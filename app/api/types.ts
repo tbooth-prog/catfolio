@@ -81,3 +81,11 @@ export interface AddFavourite {
 export interface DeleteFavourite {
 	message: string;
 }
+
+export interface AddVote {
+	id: number;
+	subId?: string | null;
+	value: number;
+	countryCode: string;
+	message: string;
+}

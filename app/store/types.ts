@@ -77,3 +77,8 @@ export interface SnackbarError {
 	title: string;
 	message: string;
 }
+
+export interface SnackbarErrorRequest {
+	id: string;
+	error: SnackbarError;
+}

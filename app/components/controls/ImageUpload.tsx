@@ -6,6 +6,7 @@ import { ACCEPTED_IMAGE_TYPES } from '~/utils';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '~/store';
 import { setTotalUploads, uploadImage } from '~/store/uploadSlice';
+import { addError } from '~/store/errorSlice';
 
 export function ImageUpload() {
 	const dispatch = useDispatch<AppDispatch>();
@@ -52,11 +53,11 @@ export function ImageUpload() {
 				getDropOperation={(types: DragTypes) => (ACCEPTED_IMAGE_TYPES.some((t) => types.has(t)) ? 'copy' : 'cancel')}
 				onDrop={async (e: DropEvent) => {
 					// get all acceptable files
-					const items = e.items.filter((item) => item.kind === 'file' && item.type.startsWith('image/'));
+					const items = e.items.filter((item) => item.kind === 'file' && ACCEPTED_IMAGE_TYPES.includes(item.type));
 
 					const files: File[] = [];
 
-					for (const item of e.items) {
+					for (const item of items) {
 						if (item.kind === 'file' && item.type.startsWith('image/')) {
 							try {
 								const file = await item.getFile();
@@ -67,6 +68,11 @@ export function ImageUpload() {
 								console.error('Error retrieving file:', error);
 							}
 						}
+					}
+
+					const invalidFiles = e.items.length - files.length;
+					if (invalidFiles !== 0) {
+						dispatch(addError({ id: crypto.randomUUID(), error: { title: 'Invalid file types selected', message: `${invalidFiles} won't be uploaded.` } }));
 					}
 
 					dispatch(setTotalUploads({ count: files.length }));

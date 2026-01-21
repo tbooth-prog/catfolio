@@ -1,10 +1,12 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { ApiClient } from '~/service/apiClient';
 import { countVotes, getOrCreateUserId } from '~/utils';
-import type { MyVote, VoteImageRequest } from './types';
-import type { DeleteFavourite } from '~/api/types';
+import type { VoteImageRequest } from './types';
+import type { AddVote, DeleteFavourite } from '~/api/types';
 import { getVotes } from '~/api/endpoints';
 import { TaskStatus } from '~/utils/enums';
+import { addError } from './errorSlice';
+import { ApiResponseError } from '@thatapicompany/thecatapi';
 
 type VoteState = {
 	// myVotes: Record<string, MyVote>;
@@ -68,11 +70,11 @@ const voteSlice = createSlice({
 			});
 
 		// Remove vote
-		builder.addCase(clearVote.rejected, (state, action) => {
-			// Restore vote if the action fails
-			state.totalVotes[action.meta.arg.imageId] = state.totalVotes[action.meta.arg.imageId] + (action.meta.arg.vote.value || 0);
-			// state.myVotes[action.meta.arg.imageId] = action.meta.arg.vote;
-		});
+		// builder.addCase(clearVote.rejected, (state, action) => {
+		// Restore vote if the action fails
+		// state.totalVotes[action.meta.arg.imageId] = state.totalVotes[action.meta.arg.imageId] + (action.meta.arg.vote.value || 0);
+		// state.myVotes[action.meta.arg.imageId] = action.meta.arg.vote;
+		// });
 
 		// Get votes for my images
 		builder
@@ -91,16 +93,42 @@ const voteSlice = createSlice({
 
 // Thunks ==================================================================
 // Vote on image
-export const upVote = createAsyncThunk('vote/upVote', async (imageId: string, { dispatch }) => {
+export const upVote = createAsyncThunk<AddVote, string, { rejectValue: string }>('vote/upVote', async (imageId: string, { dispatch, rejectWithValue }) => {
 	dispatch(addVote({ imageId, vote: { voteId: undefined, value: 1 } }));
 
-	return ApiClient.getClient().votes.addVote({ imageId, value: 1, subId: getOrCreateUserId() });
+	try {
+		return await ApiClient.getClient().votes.addVote({ imageId, value: 1, subId: getOrCreateUserId() });
+	} catch (error) {
+		const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+
+		dispatch(
+			addError({
+				id: crypto.randomUUID(),
+				error: { title: 'Up vote failed', message: errorMessage },
+			}),
+		);
+
+		return rejectWithValue(errorMessage);
+	}
 });
 
-export const downVote = createAsyncThunk('vote/downVote', async (imageId: string, { dispatch }) => {
+export const downVote = createAsyncThunk<AddVote, string, { rejectValue: string }>('vote/downVote', async (imageId: string, { dispatch, rejectWithValue }) => {
 	dispatch(addVote({ imageId, vote: { voteId: undefined, value: -1 } }));
 
-	return ApiClient.getClient().votes.addVote({ imageId, value: -1, subId: getOrCreateUserId() });
+	try {
+		return await ApiClient.getClient().votes.addVote({ imageId, value: -1, subId: getOrCreateUserId() });
+	} catch (error) {
+		const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+
+		dispatch(
+			addError({
+				id: crypto.randomUUID(),
+				error: { title: 'Down vote failed', message: errorMessage },
+			}),
+		);
+
+		return rejectWithValue(errorMessage);
+	}
 });
 
 // Rmove vote on image

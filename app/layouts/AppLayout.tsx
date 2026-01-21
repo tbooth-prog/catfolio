@@ -1,10 +1,14 @@
 import { Cat, Dog, UploadIcon } from 'lucide-react';
+import { useSelector } from 'react-redux';
 import { Link, Outlet } from 'react-router';
 import { Button, LinkButton } from '~/components/controls/Buttons';
+import { Snackbar } from '~/components/controls/Snackbar';
+import type { RootState } from '~/store';
 import { useDogMode } from '~/utils/hooks';
 
 export default function AppLayout() {
 	const { isDogModeEnabled, toggleDogMode } = useDogMode();
+	const { errors } = useSelector((state: RootState) => state.error);
 
 	return (
 		<div className="mx-auto flex min-h-dvh max-w-7xl flex-col border-x border-x-subtle dog:border-subtle-dark">
@@ -28,6 +32,11 @@ export default function AppLayout() {
 			</header>
 			<main className="flex flex-1 flex-col items-center p-6">
 				<Outlet />
+				<div className="pointer-events-none fixed bottom-0 left-0 z-20 flex h-dvh w-full max-w-112.5 flex-col items-start justify-end gap-4 px-4 pb-6">
+					{Object.entries(errors).map(([errorId, error]) => (
+						<Snackbar key={errorId} errorId={errorId} title={error.title} message={error.message} />
+					))}
+				</div>
 			</main>
 			<footer></footer>
 		</div>
