@@ -275,6 +275,7 @@ const gallerySlice = createSlice({
 // Fetch my images
 export const getMyImages = createAsyncThunk('gallery/getMyImages', async (_, { dispatch }) => {
 	const myImages = await ApiClient.getClient().images.getImages({
+		subId: getOrCreateUserId(),
 		limit: GALLERY_PAGE_SIZE,
 		size: 'small',
 	});
