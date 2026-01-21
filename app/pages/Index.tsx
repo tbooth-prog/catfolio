@@ -13,6 +13,7 @@ import type { GalleryImageType } from '~/store/types';
 import { LoadingState } from '~/components/ui/LoadingState';
 import { getAllVotes } from '~/store/voteSlice';
 import { EmptyState } from '~/components/ui/EmptyState';
+import { ErrorState } from '~/components/ui/ErrorState';
 
 export function clientLoader(args: ClientLoaderFunctionArgs) {
 	const { request } = args;
@@ -43,6 +44,15 @@ export default function Index() {
 	}, [isDogModeEnabled, search]);
 
 	// Render ====================================================================
+
+	if (initial.status === TaskStatus.Failed) {
+		return (
+			<>
+				<title>{isDogModeEnabled ? 'dogfol.io | Gallery' : 'catfol.io | Gallery'}</title>
+				<ErrorState />
+			</>
+		);
+	}
 
 	if (initial.status === TaskStatus.Pending || initial.status === TaskStatus.Idle) {
 		return (
