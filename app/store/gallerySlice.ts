@@ -401,14 +401,14 @@ export const getTopRatedImages = createAsyncThunk('gallery/getTopRatedImages', a
 		await dispatch(getAllVotes());
 	}
 
-	return getVotes();
+	return getVotes(getOrCreateUserId());
 });
 
 export const getMoreTopRatedImages = createAsyncThunk<PaginatedAsyncResult<Vote>>('gallery/getMoreTopRatedImages', async (_, { getState }) => {
 	const state = getState() as RootState;
 	const nextPage = state.gallery.pagination.currentPage + 1;
 
-	const moreImages = await getVotes(undefined, { page: nextPage });
+	const moreImages = await getVotes(getOrCreateUserId(), { page: nextPage });
 
 	return {
 		items: moreImages,

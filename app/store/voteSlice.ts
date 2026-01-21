@@ -94,13 +94,13 @@ const voteSlice = createSlice({
 export const upVote = createAsyncThunk('vote/upVote', async (imageId: string, { dispatch }) => {
 	dispatch(addVote({ imageId, vote: { voteId: undefined, value: 1 } }));
 
-	return ApiClient.getClient().votes.addVote({ imageId, value: 1 });
+	return ApiClient.getClient().votes.addVote({ imageId, value: 1, subId: getOrCreateUserId() });
 });
 
 export const downVote = createAsyncThunk('vote/downVote', async (imageId: string, { dispatch }) => {
 	dispatch(addVote({ imageId, vote: { voteId: undefined, value: -1 } }));
 
-	return ApiClient.getClient().votes.addVote({ imageId, value: -1 });
+	return ApiClient.getClient().votes.addVote({ imageId, value: -1, subId: getOrCreateUserId() });
 });
 
 // Rmove vote on image
@@ -116,7 +116,7 @@ export const clearVote = createAsyncThunk<DeleteFavourite, VoteImageRequest>('fa
 
 // Get votes for my images
 export const getAllVotes = createAsyncThunk('gallery/getVotes', async () => {
-	return getVotes(undefined, { attachImage: false, limit: 100 });
+	return getVotes(getOrCreateUserId(), { attachImage: false, limit: 100 });
 });
 
 // Actions =================================================================
