@@ -1,6 +1,7 @@
 import type { Favourite, ImageFavourite, UserImage, Vote } from '~/api/types';
 import { ImageOrientation } from './enums';
 import type { GalleryImageType, GalleryImageMeta } from '~/store/types';
+import type { ApiResponseError } from '@thatapicompany/thecatapi';
 
 export const GALLERY_PAGE_SIZE = 25;
 export const USER_ID_KEY = 'catfolio:userId';
@@ -92,4 +93,12 @@ export function countVotes(votes: Vote[]): Record<string, number> {
 	});
 
 	return counts;
+}
+
+export function extractApiErrorMessage(error: ApiResponseError): string {
+	if (typeof error.data === 'string') {
+		return error.data;
+	} else {
+		return error.data?.message || 'Unknown error';
+	}
 }

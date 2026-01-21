@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { ApiClient } from '~/service/apiClient';
-import { getOrCreateUserId } from '~/utils';
+import { extractApiErrorMessage, getOrCreateUserId } from '~/utils';
 import type { FavouriteImageRequest } from './types';
 import type { AddFavourite, DeleteFavourite } from '~/api/types';
 import type { RootState } from '~/store';
@@ -59,7 +59,7 @@ export const favouriteImage = createAsyncThunk<AddFavourite, string, { rejectVal
 	try {
 		return await ApiClient.getClient().favourites.addFavourite(imageId, getOrCreateUserId());
 	} catch (error) {
-		const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+		const errorMessage = error instanceof ApiResponseError ? extractApiErrorMessage(error) : 'Unknown error';
 
 		dispatch(
 			addError({
@@ -87,7 +87,7 @@ export const unfavouriteImage = createAsyncThunk<DeleteFavourite, FavouriteImage
 		try {
 			return await ApiClient.getClient().favourites.deleteFavourite(favouriteId);
 		} catch (error) {
-			const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+			const errorMessage = error instanceof ApiResponseError ? extractApiErrorMessage(error) : 'Unknown error';
 
 			dispatch(
 				addError({

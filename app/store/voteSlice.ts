@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { ApiClient } from '~/service/apiClient';
-import { countVotes, getOrCreateUserId } from '~/utils';
+import { countVotes, extractApiErrorMessage, getOrCreateUserId } from '~/utils';
 import type { VoteImageRequest } from './types';
 import type { AddVote, DeleteFavourite } from '~/api/types';
 import { getVotes } from '~/api/endpoints';
@@ -99,7 +99,7 @@ export const upVote = createAsyncThunk<AddVote, string, { rejectValue: string }>
 	try {
 		return await ApiClient.getClient().votes.addVote({ imageId, value: 1, subId: getOrCreateUserId() });
 	} catch (error) {
-		const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+		const errorMessage = error instanceof ApiResponseError ? extractApiErrorMessage(error) : 'Unknown error';
 
 		dispatch(
 			addError({
@@ -118,7 +118,7 @@ export const downVote = createAsyncThunk<AddVote, string, { rejectValue: string 
 	try {
 		return await ApiClient.getClient().votes.addVote({ imageId, value: -1, subId: getOrCreateUserId() });
 	} catch (error) {
-		const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+		const errorMessage = error instanceof ApiResponseError ? extractApiErrorMessage(error) : 'Unknown error';
 
 		dispatch(
 			addError({

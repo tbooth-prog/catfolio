@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { FileUploadFailure, FileUploadRequest, FileUploadSuccess, SelectedFile } from './types';
 import { ApiClient } from '~/service/apiClient';
-import { delay, getImageOrientation, getOrCreateUserId } from '~/utils';
+import { delay, extractApiErrorMessage, getImageOrientation, getOrCreateUserId } from '~/utils';
 import { TaskStatus } from '~/utils/enums';
 import { ApiResponseError } from '@thatapicompany/thecatapi';
 import { removeImageById } from './gallerySlice';
@@ -106,7 +106,7 @@ export const uploadImage = createAsyncThunk<FileUploadSuccess, FileUploadRequest
 
 		return { uploadId };
 	} catch (e) {
-		const errorMessage = e instanceof ApiResponseError ? e.data : 'Oops! Image upload failed. Please try again';
+		const errorMessage = e instanceof ApiResponseError ? extractApiErrorMessage(e) : 'Oops! Image upload failed. Please try again';
 
 		return rejectWithValue({
 			uploadId,
@@ -121,7 +121,7 @@ export const deleteImage = createAsyncThunk<void, string, { rejectValue: string 
 	try {
 		return await ApiClient.getClient().images.deleteImage(imageId);
 	} catch (error) {
-		const errorMessage = error instanceof ApiResponseError ? error.data.message : 'Unknown error';
+		const errorMessage = error instanceof ApiResponseError ? extractApiErrorMessage(error) : 'Unknown error';
 
 		dispatch(
 			addError({
