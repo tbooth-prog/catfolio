@@ -2,18 +2,20 @@ import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '~/store';
 import { UploadGallery } from './UploadGallery';
-import { Navigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import { UploadError } from './UploadError';
 import { EmptyUploadState } from './EmptyUploadState';
 import { resetUpload } from '~/store/uploadSlice';
 
 export function UploadProgress() {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const { failedFiles, pendingFiles } = useSelector((state: RootState) => state.upload);
 
 	const canNavigateOnCompletion = useRef<boolean>(true);
 	const isUploading = Object.keys(pendingFiles).length > 0;
 	const hasErrors = Object.keys(failedFiles).length > 0;
+	const isUploadComplete = !isUploading && !hasErrors;
 
 	useEffect(() => {
 		if (canNavigateOnCompletion.current && hasErrors) {
@@ -21,13 +23,12 @@ export function UploadProgress() {
 		}
 	}, [hasErrors]);
 
-	console.log(canNavigateOnCompletion.current, isUploading, hasErrors);
+	if (isUploadComplete && canNavigateOnCompletion.current) {
+		return <Navigate to="/" state={{ resetUpload: true }} />;
+	}
 
-	if (!isUploading && !hasErrors) {
-		if (canNavigateOnCompletion.current) {
-			dispatch(resetUpload());
-			return <Navigate to="/" />;
-		} else return <EmptyUploadState />;
+	if (isUploadComplete) {
+		return <EmptyUploadState />;
 	}
 
 	return (
@@ -52,7 +53,11 @@ export function UploadProgress() {
 						<hr className="flex-1 border-neutral-200 dog:border-neutral-600" />
 					</div>
 					<section className="w-full md:w-3/4">
-						<UploadError />
+						<ul className="flex flex-wrap gap-4">
+							{Object.entries(failedFiles).map(([uploadId, imageData]) => (
+								<UploadError uploadId={uploadId} imageData={imageData} />
+							))}
+						</ul>
 					</section>
 				</>
 			)}

@@ -63,13 +63,13 @@ export function Button(props: SharedButtonProps & AriaButtonProps) {
 }
 
 export function LinkButton(props: SharedButtonProps & LinkProps) {
-	const { to, children, className, variant } = props;
+	const { to, children, className, state, variant } = props;
 
 	const ref = useRef(null);
 	const { buttonProps } = useButton({ elementType: 'a', href: typeof to === 'string' ? to : undefined }, ref);
 
 	return (
-		<Link ref={ref} to={to} {...buttonProps} className={buttonClasses({ variant, className })}>
+		<Link ref={ref} to={to} state={state} {...buttonProps} className={buttonClasses({ variant, className })}>
 			{children}
 		</Link>
 	);

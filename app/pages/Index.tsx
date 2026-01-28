@@ -1,12 +1,12 @@
 import Masonry from 'react-masonry-css';
 import type { RootState } from '~/store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { GalleryFilter, TaskStatus } from '~/utils/enums';
 import { useDogMode } from '~/utils/hooks';
 import { GalleryImage } from '~/components/ui/GalleryImage';
 import { InfiniteScroll } from '~/components/controls/InfiniteScroll';
-import store, { getImages, getMoreImages } from '~/store';
+import store, { type AppDispatch, getImages, getMoreImages } from '~/store';
 import { useLocation, useRevalidator, type ClientLoaderFunctionArgs } from 'react-router';
 import type { GalleryImageType } from '~/store/types';
 
@@ -14,6 +14,7 @@ import { LoadingState } from '~/components/ui/LoadingState';
 import { getAllVotes } from '~/store/voteSlice';
 import { EmptyState } from '~/components/ui/EmptyState';
 import { ErrorState } from '~/components/ui/ErrorState';
+import { resetUpload } from '~/store/uploadSlice';
 
 export function clientLoader(args: ClientLoaderFunctionArgs) {
 	const { request } = args;
@@ -33,8 +34,9 @@ export function clientLoader(args: ClientLoaderFunctionArgs) {
 }
 
 export default function Index() {
+	const dispatch = useDispatch<AppDispatch>();
 	const { revalidate } = useRevalidator();
-	const { search } = useLocation();
+	const { search, state } = useLocation();
 
 	const { initial, images, pagination } = useSelector((state: RootState) => state.gallery);
 	const { isDogModeEnabled } = useDogMode();
@@ -42,6 +44,12 @@ export default function Index() {
 	useEffect(() => {
 		revalidate();
 	}, [isDogModeEnabled, search]);
+
+	useEffect(() => {
+		if (state?.resetUpload) {
+			dispatch(resetUpload());
+		}
+	}, []);
 
 	// Render ====================================================================
 

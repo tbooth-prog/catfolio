@@ -83,7 +83,7 @@ const voteSlice = createSlice({
 			})
 			.addCase(getAllVotes.fulfilled, (state, action) => {
 				state.totalVotes = countVotes(action.payload);
-				state.totalVoteStatus = TaskStatus.Succeded;
+				state.totalVoteStatus = TaskStatus.Succeeded;
 			})
 			.addCase(getAllVotes.rejected, (state) => {
 				state.totalVoteStatus = TaskStatus.Failed;

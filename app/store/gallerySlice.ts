@@ -20,6 +20,7 @@ type GalleryState = {
 	pagination: PaginatedAsyncRequest;
 	filter: GalleryFilter | null;
 	sort: GallerySortOption;
+	imagesPendingDeletion: Record<string, GalleryImageType>;
 };
 
 const initialState: GalleryState = {
@@ -32,6 +33,7 @@ const initialState: GalleryState = {
 	pagination: defaultPaginatedAsyncRequestState,
 	filter: null,
 	sort: GallerySortOption.None,
+	imagesPendingDeletion: {},
 };
 
 const gallerySlice = createSlice({
@@ -42,7 +44,26 @@ const gallerySlice = createSlice({
 			state.filter = null;
 		},
 		removeImageById: (state, action: PayloadAction<string>) => {
-			state.images = state.images.filter((image) => image.id !== action.payload);
+			const index = state.images.findIndex((img) => img.id === action.payload);
+
+			if (index !== -1) {
+				const [removed] = state.images.splice(index, 1);
+				state.imagesPendingDeletion[action.payload] = { ...removed, meta: { ...removed.meta, imageIndex: index } };
+			}
+		},
+		restoreImageById: (state, action: PayloadAction<string>) => {
+			const restoreIndex = state.imagesPendingDeletion[action.payload].meta?.imageIndex;
+
+			if (restoreIndex !== undefined) {
+				state.images = [...state.images.slice(0, restoreIndex), state.imagesPendingDeletion[action.payload], ...state.images.slice(restoreIndex)];
+			} else {
+				state.images.push(state.imagesPendingDeletion[action.payload]);
+			}
+
+			delete state.imagesPendingDeletion[action.payload];
+		},
+		cleanUpImageById: (state, action: PayloadAction<string>) => {
+			delete state.imagesPendingDeletion[action.payload];
 		},
 		resetGallery: () => initialState,
 	},
@@ -66,9 +87,9 @@ const gallerySlice = createSlice({
 				state.pagination = defaultPaginatedAsyncRequestState;
 			})
 			.addCase(getMyImages.fulfilled, (state, action) => {
-				state.initial.status = TaskStatus.Succeded;
+				state.initial.status = TaskStatus.Succeeded;
 
-				state.initial.status = TaskStatus.Succeded;
+				state.initial.status = TaskStatus.Succeeded;
 				if (action.payload.length < GALLERY_PAGE_SIZE) {
 					state.pagination.hasMore = false;
 				}
@@ -94,7 +115,7 @@ const gallerySlice = createSlice({
 
 				state.pagination = {
 					...action.payload.pagination,
-					status: TaskStatus.Succeded,
+					status: TaskStatus.Succeeded,
 					error: null,
 				};
 			})
@@ -114,7 +135,7 @@ const gallerySlice = createSlice({
 				state.pagination = { ...defaultPaginatedAsyncRequestState, currentPage: state.allImagesCache.currentPage };
 			})
 			.addCase(getAllImages.fulfilled, (state, action) => {
-				state.initial.status = TaskStatus.Succeded;
+				state.initial.status = TaskStatus.Succeeded;
 				if (action.payload.length < GALLERY_PAGE_SIZE) {
 					state.pagination.hasMore = false;
 				}
@@ -136,7 +157,7 @@ const gallerySlice = createSlice({
 				state.images = dedupeById([...state.images, ...action.payload.items]);
 				state.pagination = {
 					...action.payload.pagination,
-					status: TaskStatus.Succeded,
+					status: TaskStatus.Succeeded,
 					error: null,
 				};
 			})
@@ -164,9 +185,9 @@ const gallerySlice = createSlice({
 				state.pagination = defaultPaginatedAsyncRequestState;
 			})
 			.addCase(getFavouriteImages.fulfilled, (state, action) => {
-				state.initial.status = TaskStatus.Succeded;
+				state.initial.status = TaskStatus.Succeeded;
 
-				state.initial.status = TaskStatus.Succeded;
+				state.initial.status = TaskStatus.Succeeded;
 				if (action.payload.length < GALLERY_PAGE_SIZE) {
 					state.pagination.hasMore = false;
 				}
@@ -190,7 +211,7 @@ const gallerySlice = createSlice({
 
 				state.pagination = {
 					...action.payload.pagination,
-					status: TaskStatus.Succeded,
+					status: TaskStatus.Succeeded,
 					error: null,
 				};
 			})
@@ -218,9 +239,9 @@ const gallerySlice = createSlice({
 				state.pagination = defaultPaginatedAsyncRequestState;
 			})
 			.addCase(getTopRatedImages.fulfilled, (state, action) => {
-				state.initial.status = TaskStatus.Succeded;
+				state.initial.status = TaskStatus.Succeeded;
 
-				state.initial.status = TaskStatus.Succeded;
+				state.initial.status = TaskStatus.Succeeded;
 				if (action.payload.length < GALLERY_PAGE_SIZE) {
 					state.pagination.hasMore = false;
 				}
@@ -259,7 +280,7 @@ const gallerySlice = createSlice({
 
 				state.pagination = {
 					...action.payload.pagination,
-					status: TaskStatus.Succeded,
+					status: TaskStatus.Succeeded,
 					error: null,
 				};
 			})
@@ -420,7 +441,7 @@ export const getMoreTopRatedImages = createAsyncThunk<PaginatedAsyncResult<Vote>
 });
 
 // Actions =================================================================
-export const { resetFilter, removeImageById, resetGallery } = gallerySlice.actions;
+export const { resetFilter, removeImageById, restoreImageById, cleanUpImageById, resetGallery } = gallerySlice.actions;
 
 // Reducer =================================================================
 export default gallerySlice.reducer;

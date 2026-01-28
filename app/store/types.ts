@@ -32,6 +32,7 @@ export interface SelectedFile {
 	status: TaskStatus;
 	error: string | null;
 	orientation: ImageOrientation;
+	retryStatus: TaskStatus;
 }
 
 export interface FileUploadSuccess {
@@ -52,6 +53,7 @@ export interface GalleryImageMeta {
 	favouriteId?: number | undefined;
 	voteId?: number | undefined;
 	myVote?: number;
+	imageIndex?: number;
 }
 
 export interface GalleryImageType extends BaseImage {

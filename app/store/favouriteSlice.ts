@@ -5,7 +5,7 @@ import type { FavouriteImageRequest } from './types';
 import type { AddFavourite, DeleteFavourite } from '~/api/types';
 import type { RootState } from '~/store';
 import { GalleryFilter } from '~/utils/enums';
-import { removeImageById } from './gallerySlice';
+import { cleanUpImageById, removeImageById, restoreImageById } from './gallerySlice';
 import { addError } from './errorSlice';
 import { ApiResponseError } from '@thatapicompany/thecatapi';
 
@@ -85,9 +85,15 @@ export const unfavouriteImage = createAsyncThunk<DeleteFavourite, FavouriteImage
 		}
 
 		try {
-			return await ApiClient.getClient().favourites.deleteFavourite(favouriteId);
+			const del = await ApiClient.getClient().favourites.deleteFavourite(favouriteId);
+			dispatch(cleanUpImageById(imageId));
+			return del;
 		} catch (error) {
 			const errorMessage = error instanceof ApiResponseError ? extractApiErrorMessage(error) : 'Unknown error';
+
+			if (state.gallery.filter === GalleryFilter.Favourites) {
+				dispatch(restoreImageById(imageId));
+			}
 
 			dispatch(
 				addError({

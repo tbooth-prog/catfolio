@@ -3,7 +3,7 @@ import { clsx } from 'clsx';
 import { ImageOrientation, TaskStatus } from '~/utils/enums';
 import type { SelectedFile } from '~/store/types';
 import { Spinner } from './Spinner';
-import { CircleCheck, CircleX, FileCheck, FileX } from 'lucide-react';
+import { FileCheck, FileX } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { clearPendingFile } from '~/store/uploadSlice';
 import { useDispatch } from 'react-redux';
@@ -21,7 +21,7 @@ export function UploadImage(props: Props) {
 	const [isExiting, setIsExiting] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (image.status === TaskStatus.Succeded || image.status === TaskStatus.Failed) {
+		if (image.status === TaskStatus.Succeeded || image.status === TaskStatus.Failed) {
 			setIsExiting(true);
 			const clearFileTimer = setTimeout(() => {
 				dispatch(clearPendingFile({ uploadId }));
@@ -39,7 +39,7 @@ export function UploadImage(props: Props) {
 		'w-full': isMasonry,
 	});
 
-	const exitY = image.status === TaskStatus.Succeded ? -10 : 10;
+	const exitY = image.status === TaskStatus.Succeeded ? -10 : 10;
 
 	return (
 		<AnimatePresence>
@@ -58,8 +58,8 @@ export function UploadImage(props: Props) {
 					<img src={image.url} alt={`Upload image ${uploadId}`} className="h-full w-full object-cover blur-xs select-none" loading="lazy" decoding="async" draggable={false} />
 					<div className="absolute flex h-full w-full items-center justify-center bg-neutral-400/50">
 						{image.status === TaskStatus.Pending && <Spinner className="size-12 sm:size-16 md:size-18" />}
-						{image.status === TaskStatus.Succeded && <CircleCheck strokeWidth={1} className="size-1/4 fill-green-600 text-primary-text" />}
-						{image.status === TaskStatus.Failed && <CircleX strokeWidth={1} className="size-1/4 fill-red-600 text-primary-text" />}
+						{image.status === TaskStatus.Succeeded && <FileCheck strokeWidth={1} className="size-1/4 fill-green-600 text-primary-text" />}
+						{image.status === TaskStatus.Failed && <FileX strokeWidth={1} className="size-1/4 fill-red-600 text-primary-text" />}
 					</div>
 				</motion.div>
 			)}
